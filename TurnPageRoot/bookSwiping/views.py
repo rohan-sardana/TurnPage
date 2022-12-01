@@ -109,9 +109,11 @@ def book_shelf(request):
             # DB Functions go below
             book = Book.objects.get(id=book_id)
             # book.users_liked_list.add(request.user)
-            addToShelf(book, user, "R")
+            recommended_book = addToShelf(book, user, "R")
+            request.session['recommended_book'] = recommended_book
             # returns JSON response
-            return JsonResponse({"status": "ok"})
+            return JsonResponse({"status": "ok",
+            "data": recommended_book.json()})
         except Book.DoesNotExist:
             pass
     # if fails
@@ -135,9 +137,11 @@ def book_like(request):
             # DB Functions go below
             book = Book.objects.get(id=book_id)
             # book.users_liked_list.add(request.user)
-            addToShelf(book, user, "U")
+            recommended_book = addToShelf(book, user, "U")
+            request.session['recommended_book'] = recommended_book
             # returns JSON response
-            return JsonResponse({"status": "ok"})
+            return JsonResponse({"status": "ok",
+            "data": recommended_book.json()})
         except Book.DoesNotExist:
             # if book doesn't exist, do nothing... we may want to log something to the console at some point.
             pass
@@ -161,9 +165,11 @@ def book_dislike(request):
         try:
             # DB Functions go below
             book = Book.objects.get(id=book_id)
-            addToShelf(book, user, "T")
+            recommended_book = addToShelf(book, user, "T")
+            request.session['recommended_book'] = recommended_book
             # returns JSON response
-            return JsonResponse({"status": "ok"})
+            return JsonResponse({"status": "ok",
+            "data": recommended_book})
         except Book.DoesNotExist:
             # if book doesn't exist, do nothing... we may want to log something to the console at some point.
             pass
@@ -186,18 +192,34 @@ class HomeView(ListView):
         context["all_books"] = all_books
         context["book01"] = random_items[0]
         context["book02"] = random_items[1]
-        context["book03"] = random_items[2]
-        context["book04"] = random_items[3]
-        context["book05"] = random_items[4]
-        context["book06"] = random_items[5]
-        context["book07"] = random_items[6]
-        context["book08"] = random_items[7]
-        context["book09"] = random_items[8]
-        context["book10"] = random_items[9]
-        context["book11"] = random_items[10]
-        context["book12"] = random_items[11]
-        context["book13"] = random_items[12]
-        context["book14"] = random_items[13]
-        context["book15"] = random_items[14]
+    
+        recommended_book = self.request.session.get('recommended_book')
+
+        context["book03"] = items[2]
+        context["book04"] = items[3]
+        context["book05"] = items[4]
+        context["book06"] = items[5]
+        context["book07"] = items[6]
+        context["book08"] = items[7]
+        context["book09"] = items[8]
+        context["book10"] = items[9]
+        context["book11"] = items[10]
+        context["book12"] = items[11]
+        context["book13"] = items[12]
+        context["book14"] = items[13]
+        context["book15"] = items[14]
+        # context["book03"] = random_items[2]
+        # context["book04"] = random_items[3]
+        # context["book05"] = random_items[4]
+        # context["book06"] = random_items[5]
+        # context["book07"] = random_items[6]
+        # context["book08"] = random_items[7]
+        # context["book09"] = random_items[8]
+        # context["book10"] = random_items[9]
+        # context["book11"] = random_items[10]
+        # context["book12"] = random_items[11]
+        # context["book13"] = random_items[12]
+        # context["book14"] = random_items[13]
+        # context["book15"] = random_items[14]
         context["random_books"] = serializers.serialize("json", random_items)
         return context
